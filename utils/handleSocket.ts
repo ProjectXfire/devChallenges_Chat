@@ -10,7 +10,7 @@ type Message = {
 
 // Init socket
 export const initiateSocket = (baseURL: string) => {
-  socket = io(baseURL);
+  socket = io(baseURL, { transports: ["websocket"] });
 };
 
 export const disconnectSocket = () => {
