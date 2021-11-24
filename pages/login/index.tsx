@@ -81,8 +81,6 @@ const Login = ({ apiURL }: LoginPageProps) => {
       });
   };
 
-  console.log("hola");
-
   //******** RENDER ********//
   return (
     <>
