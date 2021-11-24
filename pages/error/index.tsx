@@ -8,7 +8,6 @@ type ErrorProps = {
 const Error = ({ statusCode, message }: ErrorProps) => {
   return (
     <div>
-      hola
       <h1>{statusCode}</h1>
       <p>{message}</p>
     </div>

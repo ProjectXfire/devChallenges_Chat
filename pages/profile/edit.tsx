@@ -17,6 +17,7 @@ import { getOne, update } from "@services/request/user";
 // Utils
 import { parseCookies } from "@utils/parseCookies";
 import { resizeImage } from "@utils/resizeImg";
+import { useHandlePage } from "@utils/hooks/useHandlePage";
 // Styles
 import { SAnchor } from "@styles/shared/anchor";
 import { colors } from "@styles/variables/colors";
@@ -29,6 +30,7 @@ import { SButton } from "@styles/shared/button";
 // Components
 import { CProfileEdit } from "@components/profileEdit";
 import { TUserDto } from "@models/types/user/user.dto";
+import { Error } from "@components/error";
 
 //******** SSR ********//
 // Validate cookie if exist
@@ -38,22 +40,31 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
   const apiURL = process.env.API_URL || "";
   const token = parseCookies(ctx);
-  if (token) {
-    const profile = await getOne(apiURL, token);
+  try {
+    if (token) {
+      const profile = await getOne(apiURL, token);
+      return {
+        props: {
+          profile,
+          apiURL,
+          token,
+        },
+      };
+    }
     return {
-      props: {
-        profile,
-        apiURL,
-        token,
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: "/errorPage",
+        permanent: false,
       },
     };
   }
-  return {
-    redirect: {
-      destination: "/login",
-      permanent: false,
-    },
-  };
 };
 
 type ProfileProps = {
@@ -73,6 +84,8 @@ const EditProfile = ({ profile, apiURL, token }: ProfileProps) => {
   } = useForm({ resolver: joiResolver(UserSchema) });
   // Get image selected in input
   const [image, setImage] = useState<string>(profile.avatar);
+  // Handle page
+  const { errorOnRequest, setErrorOnRequest } = useHandlePage();
 
   //******** VARIABLES ********//
   const router = useRouter();
@@ -83,10 +96,9 @@ const EditProfile = ({ profile, apiURL, token }: ProfileProps) => {
     data.avatar = image;
     update(apiURL, token, data)
       .then((res) => {
-        console.log(res);
         router.push("/profile");
       })
-      .catch();
+      .catch((err) => setErrorOnRequest(err.message));
   };
   // Capture image selected
   const selectedImage = (e: React.ChangeEvent<HTMLInputElement> | null) => {
@@ -106,62 +118,68 @@ const EditProfile = ({ profile, apiURL, token }: ProfileProps) => {
   }, []);
 
   return (
-    <CProfileEdit>
-      <Link href="/profile" passHref>
-        <SAnchor color={colors.blue}>
-          <MdKeyboardArrowLeft size={30} />
-          Back to profile
-        </SAnchor>
-      </Link>
-      <h1>Personal Info - Edit</h1>
-      <form onSubmit={handleSubmit(updateProfile)}>
-        <label htmlFor="username">Username</label>
-        <SInputGroup>
-          <input
-            type="text"
-            {...register("username")}
-            onChange={(e) => {
-              const username = sanitizeHTML(e.target.value, {
-                allowedTags: [],
-                allowedAttributes: {},
-              });
-              setValue("username", username);
-            }}
-          />
-        </SInputGroup>
-        <label htmlFor="avatar">Avatar</label>
-        <SInputFileGroup>
-          {image ? (
-            <Image
-              src={image}
-              width={60}
-              height={60}
-              alt="photo-user"
-              objectFit="contain"
-            />
-          ) : (
-            <MdInsertPhoto size={60} />
-          )}
-          <SInputFile>
-            <MdPhotoCamera size={30} /> Change
-            <input
-              type="file"
-              onChange={(e) => {
-                selectedImage(e);
-              }}
-            />
-          </SInputFile>
-        </SInputFileGroup>
-        <SButton
-          type="submit"
-          width="100px"
-          bkgColor={colors.mediumBlack}
-          color={colors.lightWhite}
-        >
-          Save
-        </SButton>
-      </form>
-    </CProfileEdit>
+    <>
+      {errorOnRequest ? (
+        <Error message={errorOnRequest} />
+      ) : (
+        <CProfileEdit>
+          <Link href="/profile" passHref>
+            <SAnchor color={colors.blue}>
+              <MdKeyboardArrowLeft size={30} />
+              Back to profile
+            </SAnchor>
+          </Link>
+          <h1>Personal Info - Edit</h1>
+          <form onSubmit={handleSubmit(updateProfile)}>
+            <label htmlFor="username">Username</label>
+            <SInputGroup>
+              <input
+                type="text"
+                {...register("username")}
+                onChange={(e) => {
+                  const username = sanitizeHTML(e.target.value, {
+                    allowedTags: [],
+                    allowedAttributes: {},
+                  });
+                  setValue("username", username);
+                }}
+              />
+            </SInputGroup>
+            <label htmlFor="avatar">Avatar</label>
+            <SInputFileGroup>
+              {image ? (
+                <Image
+                  src={image}
+                  width={60}
+                  height={60}
+                  alt="photo-user"
+                  objectFit="contain"
+                />
+              ) : (
+                <MdInsertPhoto size={60} />
+              )}
+              <SInputFile>
+                <MdPhotoCamera size={30} /> Change
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    selectedImage(e);
+                  }}
+                />
+              </SInputFile>
+            </SInputFileGroup>
+            <SButton
+              type="submit"
+              width="100px"
+              bkgColor={colors.mediumBlack}
+              color={colors.lightWhite}
+            >
+              Save
+            </SButton>
+          </form>
+        </CProfileEdit>
+      )}
+    </>
   );
 };
 

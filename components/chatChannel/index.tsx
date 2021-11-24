@@ -22,6 +22,7 @@ type ChatChannelProps = {
   showChatModal: () => void;
   showSidebarChannel: () => void;
   assingToChannel: (value: string) => void;
+  searchChannels: (search: string) => void;
 };
 
 export const ChatChannel = ({
@@ -30,6 +31,7 @@ export const ChatChannel = ({
   showChatModal,
   showSidebarChannel,
   assingToChannel,
+  searchChannels,
 }: ChatChannelProps) => {
   return (
     <SChatChannels active={active}>
@@ -40,7 +42,7 @@ export const ChatChannel = ({
         </span>
         <AiOutlinePlusCircle size="20" onClick={() => showChatModal()} />
       </SChatTitle>
-      <Search />
+      <Search searchChannels={searchChannels} />
       <SChatMenuContent>
         <h3>All Channels</h3>
         {channels.map((channel) => (

@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import type {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  NextPage,
-} from "next";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 // Providers
@@ -12,12 +8,12 @@ import sanitizeHTML from "sanitize-html";
 import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi/dist/joi";
 import { useMediaQuery } from "react-responsive";
-import io from "socket.io-client";
 // Models
 import { TChannel } from "@models/types/channel/channel";
 import { ChannelSchema } from "@models/schemas/channel";
 import { TChannelDto } from "@models/types/channel/channel.dto";
 import { TMessages } from "@models/types/message/message";
+import { TUser } from "@models/types/user/user";
 // Services
 import {
   getOneByQuery,
@@ -48,7 +44,7 @@ import { ChatBody } from "@components/chatBody";
 import { ChatMessage } from "@components/chatMessage";
 import { ChatModal } from "@components/chatModal";
 import { ChatUserMessages } from "@components/chatUserMessages";
-import { TUser } from "@models/types/user/user";
+import { Error } from "@components/error";
 
 //******** SSR ********//
 // Validate cookie if exist
@@ -58,24 +54,37 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
   const apiURL = process.env.API_URL || "";
   const token = parseCookies(ctx);
-  if (token) {
-    const channel = await getOneByQuery(apiURL, token, "welcome");
-    const messages = await getAllMessagesByChannel(apiURL, token, channel._id);
-    return {
-      props: {
+  try {
+    if (token) {
+      const channel = await getOneByQuery(apiURL, token, "welcome");
+      const messages = await getAllMessagesByChannel(
         apiURL,
-        channel,
         token,
-        messages,
+        channel._id
+      );
+      return {
+        props: {
+          apiURL,
+          channel,
+          token,
+          messages,
+        },
+      };
+    }
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: "/errorPage",
+        permanent: false,
       },
     };
   }
-  return {
-    redirect: {
-      destination: "/login",
-      permanent: false,
-    },
-  };
 };
 
 type HomeProps = {
@@ -88,7 +97,6 @@ type HomeProps = {
 const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
   //******** VARIABLES ********//
   const router = useRouter();
-  let socket: any;
 
   //******** STATES ********//
   // Inputs form
@@ -114,9 +122,9 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
   // Handle Hamburguer icon
   const isTablet = useMediaQuery({ query: "(max-width: 768px)" });
   const [showIcon, setShowIcon] = useState(false);
-
   // Channels data
   const [channels, setChannels] = useState<TChannel[]>([]);
+  const [channelsForSearch, setChannelsForSearch] = useState<TChannel[]>([]);
   const [channelSelected, setChannelSelected] = useState<TChannel>(channel);
   const [messagesByChannel, setMessagesByChannel] =
     useState<TMessages[]>(messages);
@@ -137,12 +145,11 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
           user: user._id,
         };
         sendMessage(payload);
-      } catch (error) {
-        console.log(error);
+      } catch (err: any) {
+        setErrorOnRequest(err.message);
       }
     }
   };
-
   // Handle sidebars
   const showSidebarChannel = () => {
     setSidebarChannels(false);
@@ -150,10 +157,18 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
     setBackground(true);
   };
   const showSidebarChannels = async () => {
-    setSidebarChannels(true);
-    setSidebarChannel(false);
-    const channels = await getAll(apiURL, token);
-    setChannels(channels);
+    try {
+      setSidebarChannels(true);
+      setSidebarChannel(false);
+      const channels = await getAll(apiURL, token);
+      setChannels(channels);
+      setChannelsForSearch(channels);
+    } catch (err: any) {
+      setSidebarChannels(false);
+      setSidebarChannel(false);
+      setBackground(false);
+      setErrorOnRequest(err.message);
+    }
   };
   const hideAllSidebar = () => {
     setSidebarChannel(false);
@@ -196,10 +211,23 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
         setMessagesByChannel(res.messagesByChannel);
         hideAllSidebar();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => setErrorOnRequest(err.message));
+  };
+  // Search channels
+  const searchChannels = (search: string) => {
+    if (search) {
+      const findChanneld = channelsForSearch.filter((channel) =>
+        channel.name.toLowerCase().includes(search)
+      );
+      setChannels(findChanneld);
+    } else {
+      setChannels(channelsForSearch);
+    }
   };
 
   //******** Use Effect ********//
+  // Hide hamburguer icon in big screen
+  // Connect and disconnect to socket to handle messages
   useEffect(() => {
     setShowIcon(isTablet);
     initiateSocket(apiURL);
@@ -210,7 +238,8 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
     return () => {
       disconnectSocket();
     };
-  }, [isTablet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTablet, channelSelected]);
 
   //******** RENDER ********//
   return (
@@ -220,35 +249,40 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
         <meta name="description" content="chat" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Chat>
-        <ChatMenu
-          active={sidebarChannel}
-          channel={channelSelected}
-          logout={logout}
-          showSidebarChannels={showSidebarChannels}
-        />
-        <ChatChannel
-          active={sidebarChannels}
-          channels={channels}
-          showChatModal={showChatModal}
-          showSidebarChannel={showSidebarChannel}
-          assingToChannel={assingToChannel}
-        />
-        <ChatBody>
-          <SChatTitle>
-            {showIcon && (
-              <GiHamburgerMenu size="20" onClick={showSidebarChannel} />
-            )}
-            <span>{channelSelected.name}</span>
-          </SChatTitle>
-          <SChatContent>
-            {messagesByChannel.map((message) => (
-              <ChatUserMessages key={message._id} message={message} />
-            ))}
-          </SChatContent>
-          <ChatMessage getMessage={getMessage} />
-        </ChatBody>
-      </Chat>
+      {errorOnRequest ? (
+        <Error message={errorOnRequest} />
+      ) : (
+        <Chat>
+          <ChatMenu
+            active={sidebarChannel}
+            channel={channelSelected}
+            logout={logout}
+            showSidebarChannels={showSidebarChannels}
+          />
+          <ChatChannel
+            active={sidebarChannels}
+            channels={channels}
+            showChatModal={showChatModal}
+            showSidebarChannel={showSidebarChannel}
+            assingToChannel={assingToChannel}
+            searchChannels={searchChannels}
+          />
+          <ChatBody>
+            <SChatTitle>
+              {showIcon && (
+                <GiHamburgerMenu size="20" onClick={showSidebarChannel} />
+              )}
+              <span>{channelSelected.name}</span>
+            </SChatTitle>
+            <SChatContent>
+              {messagesByChannel.map((message) => (
+                <ChatUserMessages key={message._id} message={message} />
+              ))}
+            </SChatContent>
+            <ChatMessage getMessage={getMessage} />
+          </ChatBody>
+        </Chat>
+      )}
       <ChatModal
         modalActive={chatModal}
         hideChatChannel={hideChatChannel}

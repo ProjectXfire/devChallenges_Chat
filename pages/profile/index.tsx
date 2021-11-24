@@ -26,20 +26,29 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
   const apiURL = process.env.API_URL || "";
   const token = parseCookies(ctx);
-  if (token) {
-    const profile = await getOne(apiURL, token);
+  try {
+    if (token) {
+      const profile = await getOne(apiURL, token);
+      return {
+        props: {
+          profile,
+        },
+      };
+    }
     return {
-      props: {
-        profile,
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: "/errorPage",
+        permanent: false,
       },
     };
   }
-  return {
-    redirect: {
-      destination: "/login",
-      permanent: false,
-    },
-  };
 };
 
 type ProfileProps = {

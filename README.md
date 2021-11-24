@@ -1,6 +1,6 @@
 <!-- Please update value in the {}  -->
 
-<h1 align="center">{Your project name}</h1>
+<h1 align="center">My Chat</h1>
 
 <div align="center">
    Solution for a challenge from  <a href="http://devchallenges.io" target="_blank">Devchallenges.io</a>.
@@ -8,11 +8,11 @@
 
 <div align="center">
   <h3>
-    <a href="https://{your-demo-link.your-domain}">
+    <a href="https://dev-challenges-chat.vercel.app/">
       Demo
     </a>
     <span> | </span>
-    <a href="https://{your-url-to-the-solution}">
+    <a href="https://github.com/ProjectXfire/devChallenges_Chat">
       Solution
     </a>
     <span> | </span>
@@ -27,7 +27,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
-  - [Built With](#built-with)
+- [Built With](#built-with)
 - [Features](#features)
 - [How to use](#how-to-use)
 - [Contact](#contact)
@@ -37,22 +37,36 @@
 
 ## Overview
 
-![screenshot](https://user-images.githubusercontent.com/16707738/92399059-5716eb00-f132-11ea-8b14-bcacdc8ec97b.png)
+This project is a chat page. You can send and receive message in real-time with others users that are joined in the same channel.
 
-Introduce your projects by taking a screenshot or a gif. Try to tell visitors a story about your project by answering:
+- First you must register and then you can log in.
+- For default, all new members will be joined to the welcome chat channel.
+- If you want to change the channel you must click in the hamburguer buttom, only if you are in a mobile,and it will open a sidebar, if you are in a laptop or desktop, the sidebar is already open. This sidebar show the list all of members that are joined to this channel. In the top you will see an arrow icon that say 'ALL CHANNELS', just click there and it will open another sidebar that show all the channels, only click in the channel that you want to join and that's it. In the same sidebar you will see and plus icon, this is to create a new channel.
+- In the sidebar that show all the members, are two buttons, one if for log off, and the other is to se your profile and change some data. In this page, you can only change yor username and your avatar. You can upload any image size, internally the size of the image will transform a minor size.
+- Finally, you can send and receive message from others members that are in the same channel.
 
-- Where can I see your demo?
-- What was your experience?
-- What have you learned/improved?
-- Your wisdom? :)
+Development this project I have learned about websocket, this was something new for me, and I have try to understand how its works and why is used.
+The back-end was development using NESTJS and I have used JWT for the authentication. The expired time for this is 10 minutes, after that will appear and error of authentication if you try to connect to the server doing a request.
+To store the token, I have used cookies.
 
 ### Built With
 
 <!-- This section should list any major frameworks that you built your project using. Here are a few examples.-->
 
 - [React](https://reactjs.org/)
-- [Vue.js](https://vuejs.org/)
-- [Tailwind](https://tailwindcss.com/)
+- [NextJS](https://nextjs.org/)
+
+NPM:
+
+- [Styled-Components](https://styled-components.com/)
+- [react-hook-forms](https://react-hook-form.com/)
+- [Joi](https://www.npmjs.com/package/joi)
+- [@hookform/resolvers](https://www.npmjs.com/package/@hookform/resolvers)
+- [sanitize-html](https://www.npmjs.com/package/sanitize-html)
+- [React-Icons](https://react-icons.github.io/react-icons/)
+- [socket.io](https://www.npmjs.com/package/socket.io)
+- [socket.io-client](https://www.npmjs.com/package/socket.io-client)
+- [cookie](https://www.npmjs.com/package/cookie)
 
 ## Features
 
