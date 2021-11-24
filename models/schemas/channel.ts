@@ -5,7 +5,7 @@ export const ChannelSchema = Joi.object({
     "any.required": "The field 'name' must not be empty",
     "string.max": "The field 'name' must have max 20 characters",
   }),
-  description: Joi.string().max(50).required().messages({
+  description: Joi.string().max(100).required().messages({
     "any.required": "The field 'description' must not be empty",
     "string.max": "The field 'description' must have max 50 characters",
   }),

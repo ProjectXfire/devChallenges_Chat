@@ -9,9 +9,10 @@ type Message = {
 };
 
 // Init socket
-export const initiateSocket = (baseURL: string) => {
+export const initiateSocket = (baseURL: string, channel: string) => {
   console.log("Connecting socket...");
   socket = io(baseURL, { transports: ["websocket"] });
+  socket.emit("channel", channel);
 };
 
 export const disconnectSocket = () => {

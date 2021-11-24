@@ -230,7 +230,7 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
   // Connect and disconnect to socket to handle messages
   useEffect(() => {
     setShowIcon(isTablet);
-    initiateSocket(apiURL);
+    initiateSocket(apiURL, channel._id);
     subscribeToChat((err: any, data: TMessages[]) => {
       if (err) return;
       setMessagesByChannel(data);
