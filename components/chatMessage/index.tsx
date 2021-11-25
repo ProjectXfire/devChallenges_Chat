@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useState } from "react";
 // Providers
 import { IoMdSend } from "react-icons/io";
 // Styles
@@ -18,26 +18,26 @@ export const ChatMessage = ({ getMessage }: ChatMessageProps) => {
     setMessage(e.target.value);
   }
 
+  function sendMessage(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    getMessage(message);
+    setMessage("");
+  }
+
   //******** RENDER ********/
   return (
     <SChatMessage>
-      <section>
+      <form onSubmit={(e) => sendMessage(e)}>
         <input
           type="text"
           placeholder="Type a message here"
           onChange={(e) => handleMessage(e)}
           value={message}
         />
-        <button
-          type="button"
-          onClick={() => {
-            getMessage(message);
-            setMessage("");
-          }}
-        >
+        <button type="submit">
           <IoMdSend size="20" color={colors.white} />
         </button>
-      </section>
+      </form>
     </SChatMessage>
   );
 };

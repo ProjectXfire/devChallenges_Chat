@@ -154,7 +154,7 @@ export const SChatMessage = styled.div`
   left: 0px;
   right: 0px;
   background-color: ${colors.darkBlack};
-  section {
+  form {
     margin: 5px;
     padding: 5px;
     display: flex;
