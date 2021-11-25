@@ -8,14 +8,6 @@ import sanitizeHTML from "sanitize-html";
 import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi/dist/joi";
 import { useMediaQuery } from "react-responsive";
-import {
-  Link,
-  Element,
-  Events,
-  animateScroll as scroll,
-  scrollSpy,
-  scroller,
-} from "react-scroll";
 
 // Models
 import { TChannel } from "@models/types/channel/channel";
