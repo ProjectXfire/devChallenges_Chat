@@ -28,9 +28,11 @@ export const SChatTitle = styled.div<ChatProps>`
   right: 0;
   display: flex;
   padding: 10px;
+  z-index: 1;
   text-transform: uppercase;
   justify-content: ${(props) => (props.justify ? "space-between" : "none")};
   align-items: center;
+  background-color: ${colors.darkBlack};
   -webkit-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.85);
   box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.85);
   svg {
@@ -84,13 +86,13 @@ export const SChatMenu = styled.div<ChatProps>`
   z-index: 2;
   transform: translateX(-100%);
   transition: all 0.5s ease-in-out;
+  height: 100vh;
   transform: ${(props) =>
     props.active ? "translateX(0)" : "translateX(-100%)"};
   overflow: auto;
   @media ${device.tabletL} {
     width: 100%;
     position: initial;
-    height: 100vh;
     transform: translateX(0);
   }
 `;
@@ -119,9 +121,16 @@ export const SChatChannels = styled.div<ChatProps>`
 export const SChatBody = styled.div`
   position: relative;
   height: 100vh;
+  overflow: hidden;
   @media ${device.tabletL} {
     transform: translate(0);
   }
+`;
+
+export const SChatBodyContent = styled.div`
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 `;
 
 export const SChatContent = styled.div`
@@ -138,13 +147,17 @@ export const SChatMenuContent = styled.div<ChatProps>`
 
 export const SChatMessage = styled.div`
   position: fixed;
-  display: flex;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
-  padding: 5px;
-  background-color: ${colors.mediumBlack};
-  border-radius: 10px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background-color: ${colors.darkBlack};
+  section {
+    margin: 5px;
+    padding: 5px;
+    display: flex;
+    background-color: ${colors.mediumBlack};
+    border-radius: 10px;
+  }
   input {
     width: 100%;
     padding: 10px;

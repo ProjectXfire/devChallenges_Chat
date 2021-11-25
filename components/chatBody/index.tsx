@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 // Styles
-import { SChatBody } from "@styles/components/chat";
+import { SChatBody, SChatBodyContent } from "@styles/components/chat";
 
 export const ChatBody: React.FC = ({ children }) => {
-  return <SChatBody>{children}</SChatBody>;
+  return (
+    <SChatBody>
+      <SChatBodyContent>{children}</SChatBodyContent>
+    </SChatBody>
+  );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -8,6 +8,15 @@ import sanitizeHTML from "sanitize-html";
 import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi/dist/joi";
 import { useMediaQuery } from "react-responsive";
+import {
+  Link,
+  Element,
+  Events,
+  animateScroll as scroll,
+  scrollSpy,
+  scroller,
+} from "react-scroll";
+
 // Models
 import { TChannel } from "@models/types/channel/channel";
 import { ChannelSchema } from "@models/schemas/channel";
@@ -97,6 +106,7 @@ type HomeProps = {
 const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
   //******** VARIABLES ********//
   const router = useRouter();
+  const messagesEndRef = useRef<HTMLHeadingElement>(null);
 
   //******** STATES ********//
   // Inputs form
@@ -235,11 +245,30 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
       if (err) return;
       setMessagesByChannel(data);
     });
+    setTimeout(() => {
+      if (messagesEndRef && messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({
+          block: "start",
+          inline: "end",
+        });
+      }
+    }, 500);
     return () => {
       disconnectSocket();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTablet, channelSelected]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (messagesEndRef && messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({
+          block: "start",
+          inline: "end",
+        });
+      }
+    }, 500);
+  }, [messagesByChannel]);
 
   //******** RENDER ********//
   return (
@@ -278,6 +307,7 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
               {messagesByChannel.map((message) => (
                 <ChatUserMessages key={message._id} message={message} />
               ))}
+              <div ref={messagesEndRef}></div>
             </SChatContent>
             <ChatMessage getMessage={getMessage} />
           </ChatBody>
