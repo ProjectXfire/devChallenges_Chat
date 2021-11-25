@@ -46,7 +46,7 @@ This project is a chat page. You can send and receive message in real-time with 
 - Finally, you can send and receive message from others members that are in the same channel.
 
 Development this project I have learned about websocket, this was something new for me, and I have try to understand how its works and why is used.
-The back-end was development using NESTJS and I have used JWT for the authentication. The expired time for this is 10 minutes, after that will appear and error of authentication if you try to connect to the server doing a request.
+The back-end was development using NESTJS and I have used JWT for the authentication. The expired time for this is 1 hour, after that will appear and error of authentication if you try to connect to the server doing a request.
 To store the token, I have used cookies.
 
 ### Built With
