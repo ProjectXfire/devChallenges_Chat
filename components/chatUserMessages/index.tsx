@@ -30,8 +30,10 @@ export const ChatUserMessages = ({ message }: ChatUserMessages) => {
         )}
       </SChatUserAvatar>
       <SChatUserMessage>
-        <h4>{message.user?.username}</h4>
-        <p>{message.message}</p>
+        <div>
+          <h4>{message.user?.username}</h4>
+          <p>{message.message}</p>
+        </div>
       </SChatUserMessage>
     </SChatUserMessages>
   );

@@ -8,7 +8,6 @@ import sanitizeHTML from "sanitize-html";
 import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi/dist/joi";
 import { useMediaQuery } from "react-responsive";
-
 // Models
 import { TChannel } from "@models/types/channel/channel";
 import { ChannelSchema } from "@models/schemas/channel";

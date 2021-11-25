@@ -26,7 +26,7 @@ export const SChatUserMessages = styled.article`
 
 export const SChatUserAvatar = styled.div`
   img {
-    border-radius: 5px;
+    border-radius: 50%;
   }
 `;
 

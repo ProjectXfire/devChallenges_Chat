@@ -73,6 +73,9 @@ export const SChatList = styled.div`
     padding: 5px 7px;
     border-radius: 5px;
   }
+  img {
+    border-radius: 50%;
+  }
 `;
 
 export const SChatMenu = styled.div<ChatProps>`
