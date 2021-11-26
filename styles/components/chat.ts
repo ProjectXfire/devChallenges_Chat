@@ -7,6 +7,7 @@ type ChatProps = {
   justify?: boolean;
   marginTop?: string;
   modalActive?: boolean;
+  showText?: boolean;
 };
 
 export const SChat = styled.section`
@@ -148,7 +149,7 @@ export const SChatMenuContent = styled.div<ChatProps>`
   padding: 0 20px;
 `;
 
-export const SChatMessage = styled.div`
+export const SChatMessage = styled.div<ChatProps>`
   position: fixed;
   bottom: 0px;
   left: 0px;
@@ -167,9 +168,10 @@ export const SChatMessage = styled.div`
     border: none;
     background-color: ${colors.mediumBlack};
     outline: none;
-    color: ${colors.lightWhite};
+    color: ${(props) =>
+      props.showText ? colors.mediumBlack : colors.lightWhite};
     &::placeholder {
-      color: ${colors.grey};
+      color: ${(props) => (props.showText ? colors.mediumBlack : colors.grey)};
     }
   }
   button {
@@ -242,6 +244,63 @@ export const SChatModal = styled.form<ChatProps>`
     margin-top: 10px;
     button {
       margin-right: 5px;
+    }
+  }
+`;
+
+export const SChatMessageModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  h3 {
+    margin-bottom: 5px;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 300px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: ${colors.mediumBlack};
+    opacity: 1;
+  }
+  img {
+    border-radius: 10px;
+  }
+  input {
+    width: 100%;
+    padding: 10px 10px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  div {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    button {
+      display: flex;
+      margin-left: 5px;
+      padding: 5px 7px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+    button:nth-child(1) {
+      background-color: ${colors.blue};
+    }
+    button:nth-child(2) {
+      background-color: ${colors.red};
     }
   }
 `;

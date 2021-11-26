@@ -109,6 +109,8 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
   //
   // Handle page
   const { removeCookie, setErrorOnRequest, errorOnRequest } = useHandlePage();
+  // Handle Message modal to send image
+  const [showMessageModal, setShowMessageModal] = useState(false);
   // Handle Sidebars and Modals
   const {
     sidebarChannel,
@@ -132,7 +134,7 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
 
   //******** METHODS ********//
   // Get chat message and emit
-  const getMessage = async (message: string) => {
+  const getMessage = async (message: string, messageImg?: string) => {
     const sanitizeMessage = sanitizeHTML(message, {
       allowedTags: [],
       allowedAttributes: {},
@@ -143,6 +145,7 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
         const payload = {
           channel: channelSelected._id,
           message: sanitizeMessage,
+          messageImg: messageImg,
           user: user._id,
         };
         sendMessage(payload);
@@ -161,6 +164,7 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
     try {
       setSidebarChannels(true);
       setSidebarChannel(false);
+      setShowMessageModal(false);
       const channels = await getAll(apiURL, token);
       setChannels(channels);
       setChannelsForSearch(channels);
@@ -300,7 +304,11 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
               ))}
               <div ref={messagesEndRef}></div>
             </SChatContent>
-            <ChatMessage getMessage={getMessage} />
+            <ChatMessage
+              getMessage={getMessage}
+              showMessageModal={showMessageModal}
+              setShowMessageModal={setShowMessageModal}
+            />
           </ChatBody>
         </Chat>
       )}

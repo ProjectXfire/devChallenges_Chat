@@ -40,4 +40,7 @@ export const SChatUserMessage = styled.div`
     margin-bottom: 5px;
     color: ${colors.mediumBlack};
   }
+  p {
+    font-size: 0.9rem;
+  }
 `;

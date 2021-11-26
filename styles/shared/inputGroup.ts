@@ -35,6 +35,7 @@ export const SInputFile = styled.label`
   align-items: center;
   svg {
     margin-right: 10px;
+    margin-left: 10px;
   }
   cursor: pointer;
   input[type="file"] {

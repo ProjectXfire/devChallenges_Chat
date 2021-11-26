@@ -32,6 +32,16 @@ export const ChatUserMessages = ({ message }: ChatUserMessages) => {
       <SChatUserMessage>
         <div>
           <h4>{message.user?.username}</h4>
+          {message.messageImg && (
+            <Image
+              src={message.messageImg}
+              width={100}
+              height={100}
+              alt="message-img"
+              objectFit="contain"
+              quality={100}
+            />
+          )}
           <p>{message.message}</p>
         </div>
       </SChatUserMessage>
