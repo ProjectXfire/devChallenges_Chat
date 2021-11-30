@@ -1,11 +1,14 @@
 import { TMessages } from "@models/types/message/message";
 import io from "socket.io-client";
-let socket: any;
+import { Socket } from "socket.io-client";
+let socket: Socket;
 
 type Message = {
   channel: string;
   message: string;
   user: string;
+  messageImg: string;
+  audio: string;
 };
 
 // Init socket

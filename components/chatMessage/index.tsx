@@ -4,6 +4,8 @@ import Image from "next/image";
 import { IoMdSend } from "react-icons/io";
 import { IoAttach } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
+import { BiMicrophone } from "react-icons/bi";
+import { useReactMediaRecorder } from "react-media-recorder";
 // Utils
 import { resizeImage } from "@utils/resizeImg";
 // Styles
@@ -11,9 +13,10 @@ import { SChatMessage } from "@styles/components/chat";
 import { colors } from "@styles/variables/colors";
 import { SInputFile } from "@styles/shared/inputGroup";
 import { SChatMessageModal } from "@styles/components/chat";
+import { SButton } from "@styles/shared/button";
 
 type ChatMessageProps = {
-  getMessage: (message: string, messageImg?: string) => void;
+  getMessage: (message: string, messageImg?: string, audio?: string) => void;
   showMessageModal: boolean;
   setShowMessageModal: Dispatch<SetStateAction<boolean>>;
 };
@@ -29,6 +32,9 @@ export const ChatMessage = ({
     img: "",
   });
   const [hideTextMessage, setHideTextMessage] = useState(false);
+  const [activeRecord, setActiveRecord] = useState(false);
+  const { status, startRecording, stopRecording, mediaBlobUrl } =
+    useReactMediaRecorder({ video: false });
 
   //******** METHODS ********/
   function handleMessage(e: React.ChangeEvent<HTMLInputElement>) {
@@ -37,19 +43,23 @@ export const ChatMessage = ({
   // Send message to chat
   function sendMessage(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (message.img && message.text) {
+    if (message.text) {
       getMessage(message.text, message.img);
       setMessage({ text: "", img: "" });
       setShowMessageModal(false);
       setHideTextMessage(false);
     }
   }
+  // Send audio to chat
+  function sendAudio(audio: string) {
+    getMessage("Audio", "", audio);
+  }
   // Capture image selected
   function selectedImage(e: React.ChangeEvent<HTMLInputElement> | null) {
     if (e && e.target && e.target.files && e.target.files.length > 0) {
       setShowMessageModal(true);
       setHideTextMessage(true);
-      resizeImage(e.target.files[0], 100, 100).then((res) => {
+      resizeImage(e.target.files[0], 70, 70).then((res) => {
         if (res !== null && typeof res === "string") {
           setMessage({ ...message, img: res });
         }
@@ -62,6 +72,19 @@ export const ChatMessage = ({
     setHideTextMessage(false);
     setMessage({ text: "", img: "" });
   }
+  // Handle record
+  function handleRecord() {
+    const updateActiveRecord = !activeRecord;
+    if (updateActiveRecord) {
+      startRecording();
+    } else {
+      stopRecording();
+      mediaBlobUrl && sendAudio(mediaBlobUrl);
+    }
+    setActiveRecord(updateActiveRecord);
+  }
+
+  console.log(mediaBlobUrl);
 
   //******** RENDER ********/
   return (
@@ -74,9 +97,16 @@ export const ChatMessage = ({
             onChange={(e) => handleMessage(e)}
             value={message.text}
           />
-          <button type="submit">
+          <SButton
+            type="submit"
+            bkgColor={colors.blue}
+            color={colors.lightWhite}
+            hoverOff={true}
+            width="40px"
+            icon
+          >
             <IoMdSend size="20" color={colors.white} />
-          </button>
+          </SButton>
           <SInputFile>
             <IoAttach size={30} />
             <input
@@ -86,6 +116,37 @@ export const ChatMessage = ({
               }}
             />
           </SInputFile>
+          {activeRecord ? (
+            <SButton
+              type="button"
+              bkgColor={colors.red}
+              color={colors.lightWhite}
+              hoverOff={true}
+              width="40px"
+              icon
+            >
+              <BiMicrophone
+                size={20}
+                color={colors.lightWhite}
+                onClick={handleRecord}
+              />
+            </SButton>
+          ) : (
+            <SButton
+              type="button"
+              bkgColor={colors.darkBlack}
+              color={colors.lightWhite}
+              hoverOff={true}
+              width="40px"
+              icon
+            >
+              <BiMicrophone
+                size={20}
+                color={colors.lightWhite}
+                onClick={handleRecord}
+              />
+            </SButton>
+          )}
         </form>
       </SChatMessage>
       {showMessageModal && (

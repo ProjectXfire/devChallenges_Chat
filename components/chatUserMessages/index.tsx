@@ -35,12 +35,17 @@ export const ChatUserMessages = ({ message }: ChatUserMessages) => {
           {message.messageImg && (
             <Image
               src={message.messageImg}
-              width={100}
-              height={100}
+              width={70}
+              height={70}
               alt="message-img"
               objectFit="contain"
               quality={100}
             />
+          )}
+          {message.audio && (
+            <div>
+              <video src={message.audio} controls />
+            </div>
           )}
           <p>{message.message}</p>
         </div>

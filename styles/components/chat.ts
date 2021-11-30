@@ -175,13 +175,10 @@ export const SChatMessage = styled.div<ChatProps>`
     }
   }
   button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: ${colors.blue};
+    margin-left: 5px;
+  }
+  label {
+    margin-left: 5px;
   }
   svg {
     width: 25px;

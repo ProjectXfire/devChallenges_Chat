@@ -43,4 +43,8 @@ export const SChatUserMessage = styled.div`
   p {
     font-size: 0.9rem;
   }
+  video {
+    height: 25px;
+    min-width: 220px;
+  }
 `;

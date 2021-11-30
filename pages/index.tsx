@@ -23,16 +23,17 @@ import {
 } from "@services/request/channel";
 import { getAllMessagesByChannel } from "@services/request/message";
 import { getOne } from "@services/request/user";
-// Utils
-import { parseCookies } from "@utils/parseCookies";
-import { useHandlePage } from "@utils/hooks/useHandlePage";
-import { useHandleModalBars } from "@utils/hooks/useHandleModalBars";
 import {
   initiateSocket,
   disconnectSocket,
   subscribeToChat,
   sendMessage,
-} from "@utils/handleSocket";
+} from "@services/socket/handleSocket";
+// Utils
+import { parseCookies } from "@utils/parseCookies";
+import { useHandlePage } from "@utils/hooks/useHandlePage";
+import { useHandleModalBars } from "@utils/hooks/useHandleModalBars";
+import { scrollToBottom } from "@utils/scrollToBottom";
 // Styles
 import { Background } from "@styles/shared/background";
 import { SChatTitle, SChatContent } from "@styles/components/chat";
@@ -134,7 +135,11 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
 
   //******** METHODS ********//
   // Get chat message and emit
-  const getMessage = async (message: string, messageImg?: string) => {
+  const getMessage = async (
+    message: string,
+    messageImg: string = "",
+    audio: string = ""
+  ) => {
     const sanitizeMessage = sanitizeHTML(message, {
       allowedTags: [],
       allowedAttributes: {},
@@ -147,6 +152,7 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
           message: sanitizeMessage,
           messageImg: messageImg,
           user: user._id,
+          audio: audio,
         };
         sendMessage(payload);
       } catch (err: any) {
@@ -230,7 +236,7 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
     }
   };
 
-  //******** Use Effect ********//
+  //******** USE EFFECT ********//
   // Hide hamburguer icon in big screen
   // Connect and disconnect to socket to handle messages
   useEffect(() => {
@@ -240,29 +246,15 @@ const Home = ({ apiURL, channel, token, messages }: HomeProps) => {
       if (err) return;
       setMessagesByChannel(data);
     });
-    setTimeout(() => {
-      if (messagesEndRef && messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({
-          block: "start",
-          inline: "end",
-        });
-      }
-    }, 500);
+    scrollToBottom(messagesEndRef);
     return () => {
       disconnectSocket();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTablet, channelSelected]);
-
+  // Scroll to bottom on initiate chat or receive message
   useEffect(() => {
-    setTimeout(() => {
-      if (messagesEndRef && messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({
-          block: "start",
-          inline: "end",
-        });
-      }
-    }, 500);
+    scrollToBottom(messagesEndRef);
   }, [messagesByChannel]);
 
   //******** RENDER ********//
