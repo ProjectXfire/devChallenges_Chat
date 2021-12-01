@@ -44,7 +44,7 @@ export const ChatUserMessages = ({ message }: ChatUserMessages) => {
           )}
           {message.audio && (
             <div>
-              <video src={message.audio} controls />
+              <audio src={message.audio} controls></audio>
             </div>
           )}
           <p>{message.message}</p>

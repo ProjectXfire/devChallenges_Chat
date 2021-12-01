@@ -8,6 +8,7 @@ import { BiMicrophone } from "react-icons/bi";
 import { useReactMediaRecorder } from "react-media-recorder";
 // Utils
 import { resizeImage } from "@utils/resizeImg";
+import { convertToBase64Audio } from "@utils/convertToBase64Audio";
 // Styles
 import { SChatMessage } from "@styles/components/chat";
 import { colors } from "@styles/variables/colors";
@@ -33,8 +34,11 @@ export const ChatMessage = ({
   });
   const [hideTextMessage, setHideTextMessage] = useState(false);
   const [activeRecord, setActiveRecord] = useState(false);
-  const { status, startRecording, stopRecording, mediaBlobUrl } =
-    useReactMediaRecorder({ video: false });
+  const { startRecording, stopRecording, mediaBlobUrl, clearBlobUrl } =
+    useReactMediaRecorder({
+      video: false,
+      blobPropertyBag: { type: "audio/wav" },
+    });
 
   //******** METHODS ********/
   function handleMessage(e: React.ChangeEvent<HTMLInputElement>) {
@@ -51,8 +55,10 @@ export const ChatMessage = ({
     }
   }
   // Send audio to chat
-  function sendAudio(audio: string) {
-    getMessage("Audio", "", audio);
+  function sendAudio(audio: string | null | ArrayBuffer) {
+    if (typeof audio === "string") {
+      getMessage("Audio", "", audio);
+    }
   }
   // Capture image selected
   function selectedImage(e: React.ChangeEvent<HTMLInputElement> | null) {
@@ -79,12 +85,22 @@ export const ChatMessage = ({
       startRecording();
     } else {
       stopRecording();
-      mediaBlobUrl && sendAudio(mediaBlobUrl);
     }
     setActiveRecord(updateActiveRecord);
   }
 
-  console.log(mediaBlobUrl);
+  // Tempo
+  async function audio() {
+    alert(mediaBlobUrl);
+    if (typeof mediaBlobUrl === "string") {
+      await convertToBase64Audio(mediaBlobUrl, (e) => {
+        if (e.target) {
+          sendAudio(e.target.result);
+          clearBlobUrl();
+        }
+      });
+    }
+  }
 
   //******** RENDER ********/
   return (
@@ -147,6 +163,14 @@ export const ChatMessage = ({
               />
             </SButton>
           )}
+          <SButton
+            hoverOff={true}
+            width="40px"
+            type="button"
+            onClick={() => audio()}
+          >
+            SA
+          </SButton>
         </form>
       </SChatMessage>
       {showMessageModal && (
