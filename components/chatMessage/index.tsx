@@ -91,7 +91,6 @@ export const ChatMessage = ({
 
   // Tempo
   async function audio() {
-    alert(mediaBlobUrl);
     if (typeof mediaBlobUrl === "string") {
       await convertToBase64Audio(mediaBlobUrl, (e) => {
         if (e.target) {
