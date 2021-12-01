@@ -7,6 +7,7 @@ interface ButtonProps {
   bkgColor?: string;
   hoverOff?: boolean;
   icon?: boolean;
+  animation?: boolean;
 }
 
 export const SButton = styled.button<ButtonProps>`

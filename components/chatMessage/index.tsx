@@ -5,6 +5,7 @@ import { IoMdSend } from "react-icons/io";
 import { IoAttach } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
 import { BiMicrophone } from "react-icons/bi";
+import { FaRegFileAudio } from "react-icons/fa";
 import { useReactMediaRecorder } from "react-media-recorder";
 // Utils
 import { resizeImage } from "@utils/resizeImg";
@@ -34,6 +35,7 @@ export const ChatMessage = ({
   });
   const [hideTextMessage, setHideTextMessage] = useState(false);
   const [activeRecord, setActiveRecord] = useState(false);
+  const [showSendAudioButton, setShowSendAudioButton] = useState(false);
   const { startRecording, stopRecording, mediaBlobUrl, clearBlobUrl } =
     useReactMediaRecorder({
       video: false,
@@ -85,6 +87,7 @@ export const ChatMessage = ({
       startRecording();
     } else {
       stopRecording();
+      setShowSendAudioButton(true);
     }
     setActiveRecord(updateActiveRecord);
   }
@@ -96,6 +99,7 @@ export const ChatMessage = ({
         if (e.target) {
           sendAudio(e.target.result);
           clearBlobUrl();
+          setShowSendAudioButton(false);
         }
       });
     }
@@ -162,14 +166,19 @@ export const ChatMessage = ({
               />
             </SButton>
           )}
-          <SButton
-            hoverOff={true}
-            width="40px"
-            type="button"
-            onClick={() => audio()}
-          >
-            SA
-          </SButton>
+          {showSendAudioButton && (
+            <SButton
+              color={colors.lightWhite}
+              bkgColor={colors.green}
+              hoverOff={true}
+              width="40px"
+              type="button"
+              onClick={() => audio()}
+              icon
+            >
+              <FaRegFileAudio size={20} />
+            </SButton>
+          )}
         </form>
       </SChatMessage>
       {showMessageModal && (
